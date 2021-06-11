@@ -31,7 +31,7 @@ class StringData {
     ],
     5 : [
       "Lain-lain",
-      ColorPalette.descColor,
+      Colors.purple,
       Icons.layers
     ],
   };
