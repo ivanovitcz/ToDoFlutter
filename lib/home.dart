@@ -273,8 +273,9 @@ class _HomeState extends State<Home> {
       children: [
         for (int i = 0; i < StringData.categories.length; i += 2) 
           Container(
-              padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
-              child: buildCategoryRow(context, i)),
+            padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
+            child: buildCategoryRow(context, i)
+          ),
       ]
     );
     
@@ -331,15 +332,48 @@ class _HomeState extends State<Home> {
                 ),
                 textAlign: TextAlign.left,
               ),
-              Text(
-                "0/0",
-                style: TextStyle(
-                  fontFamily: 'Niramit',
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
-                ),
-                textAlign: TextAlign.left,
+              StreamBuilder<String>(
+                stream: PrefToDo.getToDo(),
+                builder: (context, snapshot) {
+                  if(!snapshot.hasData) {
+                    return Container(
+                      width: 50,
+                      height: 50,
+                      child: CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(ColorPalette.primaryColor),
+                      ),
+                    );
+                  }
+                  var output;
+                  var finished = 0;
+                  var all = 0;
+
+                  if(snapshot.data == '') {
+                    output = "0/a0";
+                  } else {
+                    var listToDo = json.decode(snapshot.data);
+                    for (String key in listToDo.keys) {
+                      if(listToDo[key]['category'] == i) {
+                        all += 1;
+                        if(listToDo[key]['isFinish'] == 1) {
+                          finished += 1;
+                        } 
+                      }
+                    }
+                  }
+                  
+                  output = finished.toString()+"/"+all.toString();
+                  return Text(
+                    output,
+                    style: TextStyle(
+                      fontFamily: 'Niramit',
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                    ),
+                    textAlign: TextAlign.left,
+                  );
+                }
               ),
             ],
           )

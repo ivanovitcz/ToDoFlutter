@@ -53,7 +53,7 @@ class _AllToDoState extends State<AllToDo> {
                 ),
                 Container(
                   child: Text(
-                    "Create To Do",
+                    "List All To Do",
                     style: TextStyle(
                         fontFamily: 'Niramit',
                         color: ColorPalette.titleColor,
@@ -164,12 +164,8 @@ class _AllToDoState extends State<AllToDo> {
             stream: PrefToDo.getToDo(),
             builder: (context, snapshot) {
               if(!snapshot.hasData) {
-                return Container(
-                  width: 50,
-                  height: 50,
-                  child: CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(ColorPalette.primaryColor),
-                  ),
+                return CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(ColorPalette.primaryColor),
                 );
               }
               return buildListToDo(context, snapshot);
@@ -196,15 +192,19 @@ class _AllToDoState extends State<AllToDo> {
           unfinished+=1;
         }
       }
+
+      final reverseListToDo = LinkedHashMap.fromEntries(listToDo.entries.toList().reversed);
       
-      //cek apakah finished == total semua? yg berarti masih adakah unfinished?
-      if(!(finished == countToDo)) {
-        final reverseListToDo = LinkedHashMap.fromEntries(listToDo.entries.toList().reversed);
-        
-        //cek apakah tab finished?
+      if(countToDo == 0) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text("Tidak Ada To Do")
+          ],
+        );
+      } else {
         if(isFinish) {
 
-          //cek apakah finished == 0?
           if(finished == 0) {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -222,13 +222,11 @@ class _AllToDoState extends State<AllToDo> {
             );
           }
         } else {
-
-          //cek apakah unfinished == 0
           if(unfinished == 0) {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Text("Belum Ada To Do")
+                Text("To Do Sudah Selesai")
               ],
             );
           } else {
@@ -240,51 +238,8 @@ class _AllToDoState extends State<AllToDo> {
               ],
             );
           }
-          
         }
-
-      } else {
-        final reverseListToDo = LinkedHashMap.fromEntries(listToDo.entries.toList().reversed);
-
-        //cek apakah tab finished?
-        if(isFinish) {
-          if(finished == 0) {
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text("Belum Ada To Do Selesai")
-              ],
-            );
-          } else {
-            return Column(
-              children: [
-                for (String key in reverseListToDo.keys)
-                  if(reverseListToDo[key]['isFinish'] != 0)
-                    buildOneToDo(context, reverseListToDo, key)
-              ],
-            );
-          }
-          
-        } else {
-          if(unfinished == 0) {
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text("Tidak ada To Do")
-              ],
-            );
-          } else {
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text("To Do Sudah Selesai")
-              ],
-            );
-          }
-          
-        }
-        
-      } 
+      }
       
     } else {
       return Column(
